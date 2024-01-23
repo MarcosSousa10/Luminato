@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps *//* eslint-disable prettier/prettier */
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   TouchableOpacity,
@@ -11,18 +11,21 @@ import { textTypes } from '../../../shared/components/text/textTypes';
 import { Icon } from '../../../shared/components/icon/Icon';
 import { useFocusEffect } from '@react-navigation/native';
 import { FlatList } from 'react-native';
-import { ContainerPrincipal, ImagelogPrincipal, TextPrincipal, TextPrincipalF,
-   ViewPrincipalCenter, ViewPrincipalCondicao, ViewPrincipalCondicaoColumn, ViewPrincipalrCentro }
-    from '../styles/product.styles';
+import {
+  ContainerPrincipal, ImagelogPrincipal, TextPrincipal, TextPrincipalF,
+  ViewPrincipalCenter, ViewPrincipalCondicao, ViewPrincipalCondicaoColumn, ViewPrincipalrCentro
+}
+  from '../styles/product.styles';
 import { useProduct } from '../hooks/useProduct';
 
 const Product = () => {
 
   const { refreshing1, datas, handleOnPress, update, onRefresh } = useProduct();
-
+  const [hiddenItems, setHiddenItems] = useState<string[]>([]);
   useFocusEffect(
     React.useCallback(() => {
       handleOnPress();
+      setHiddenItems([]);
     }, []),
   );
   const styles = {
@@ -37,113 +40,123 @@ const Product = () => {
         resizeMode="contain"
         source={require('../../../assets/images/2021_logo-luminato_othon-de-carvalho_page-0002-removebg-preview.png')}
       />
-
       <FlatList
         style={styles.container}
         data={datas}
         keyExtractor={item => item.numorca.toString()}
-        renderItem={({ item, index }) => (
-          <View key={index}>
-            <ViewPrincipalCondicao key={item.codprod}>
-              <ViewPrincipalCondicaoColumn>
-                <ViewPrincipalCenter>
-                  <Text
-                    type={textTypes.TITLE_SEMI_BOLD}
-                    style={{ fontSize: 30 }}
-                    color={theme.colors.neutraTheme.darkBlack}>
-                    {item.projetista}
-                  </Text>
-                </ViewPrincipalCenter>
-                <ViewPrincipalrCentro>
-                  <TextPrincipalF>
-                    <Text
-                      type={textTypes.PARAGRAPH_SEMI_BOLD}
-                      color={theme.colors.neutraTheme.black}>
-                      Cliente:
-                    </Text>
-                    {item.cliente}
-                  </TextPrincipalF>
-                  <TextPrincipalF>
-                    <Text
-                      type={textTypes.PARAGRAPH_SEMI_BOLD}
-                      color={theme.colors.neutraTheme.black}>
-                      Orçamento:
-                    </Text>
-                    {item.numorca}
-                  </TextPrincipalF>
-                  <TextPrincipalF>
-                    <Text
-                      type={textTypes.PARAGRAPH_SEMI_BOLD}
-                      color={theme.colors.neutraTheme.black}>
-                      Fisica/Juridico:
-                    </Text>
-                    {item.tipocliente}
-                  </TextPrincipalF>
-                  <View style={{ flexDirection: 'row' }}>
-                    <TextPrincipalF>
-                      <Text
-                        type={textTypes.PARAGRAPH_SEMI_BOLD}
-                        color={theme.colors.neutraTheme.black}>
-                        Valor:
-                      </Text>
-                      {new Intl.NumberFormat('pt-BR', {
-                        style: 'currency',
-                        currency: 'BRL',
-                      }).format(Number(item.valor))}
-                    </TextPrincipalF>
-                    <TextPrincipal>
-                      <Text
-                        type={textTypes.PARAGRAPH_SEMI_BOLD}
-                        color={theme.colors.neutraTheme.black}>
-                        Comissão:
-                      </Text>
-                      {new Intl.NumberFormat('pt-BR', {
-                        style: 'currency',
-                        currency: 'BRL',
-                      }).format(Number(item.vlcomissaoproj))}
-                    </TextPrincipal>
-                  </View>
-                </ViewPrincipalrCentro>
-              </ViewPrincipalCondicaoColumn>
-              <View style={{ flexDirection: 'column' }}>
-                <TouchableOpacity
-                  onPress={() =>
-                    update(item.numorca, 'AP')
-                  }>
-                  <Text
-                    style={{
-                      fontSize: 50,
-                      marginLeft: 7,
-                      marginBottom: '50%',
-                    }}>
-                    <Icon
-                      color={theme.colors.neutraTheme.darkBlack}
-                      name={'checkmark2'}
-                      size={40}
-                    />
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() =>
-                    update(item.numorca, 'RP')
-                  }>
-                  <Text
-                    style={{
-                      fontSize: 50,
-                      marginLeft: 7,
-                    }}>
-                    <Icon
-                      color={theme.colors.neutraTheme.darkBlack}
-                      name={'cruzar'}
-                      size={40}
-                    />
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </ViewPrincipalCondicao>
+        renderItem={({ item, index }) => {
+          if (!hiddenItems.includes(item.numorca)) {
+            return (
+              <View key={index}>
 
-          </View>
-        )}
+                <ViewPrincipalCondicao key={item.codprod}>
+                  <ViewPrincipalCondicaoColumn>
+                    <ViewPrincipalCenter>
+                      <Text
+                        type={textTypes.TITLE_SEMI_BOLD}
+                        style={{ fontSize: 30 }}
+                        color={theme.colors.neutraTheme.darkBlack}>
+                        {item.projetista}
+                      </Text>
+                    </ViewPrincipalCenter>
+                    <ViewPrincipalrCentro>
+                      <TextPrincipalF>
+                        <Text
+                          type={textTypes.PARAGRAPH_SEMI_BOLD}
+                          color={theme.colors.neutraTheme.black}>
+                          Cliente:
+                        </Text>
+                        {item.cliente}
+                      </TextPrincipalF>
+                      <TextPrincipalF>
+                        <Text
+                          type={textTypes.PARAGRAPH_SEMI_BOLD}
+                          color={theme.colors.neutraTheme.black}>
+                          Orçamento:
+                        </Text>
+                        {item.numorca}
+                      </TextPrincipalF>
+                      <TextPrincipalF>
+                        <Text
+                          type={textTypes.PARAGRAPH_SEMI_BOLD}
+                          color={theme.colors.neutraTheme.black}>
+                          Fisica/Juridico:
+                        </Text>
+                        {item.tipocliente}
+                      </TextPrincipalF>
+                      <View style={{ flexDirection: 'row' }}>
+                        <TextPrincipalF>
+                          <Text
+                            type={textTypes.PARAGRAPH_SEMI_BOLD}
+                            color={theme.colors.neutraTheme.black}>
+                            Valor:
+                          </Text>
+                          {new Intl.NumberFormat('pt-BR', {
+                            style: 'currency',
+                            currency: 'BRL',
+                          }).format(Number(item.valor))}
+                        </TextPrincipalF>
+                        <TextPrincipal>
+                          <Text
+                            type={textTypes.PARAGRAPH_SEMI_BOLD}
+                            color={theme.colors.neutraTheme.black}>
+                            Comissão:
+                          </Text>
+                          {new Intl.NumberFormat('pt-BR', {
+                            style: 'currency',
+                            currency: 'BRL',
+                          }).format(Number(item.vlcomissaoproj))}
+                        </TextPrincipal>
+                      </View>
+                    </ViewPrincipalrCentro>
+                  </ViewPrincipalCondicaoColumn>
+                  <View style={{ flexDirection: 'column' }}>
+                    <TouchableOpacity
+                      onPress={() => {
+                        update(item.numorca, 'AP');
+                        setHiddenItems([...hiddenItems, item.numorca]);
+                      }
+                      }>
+                      <Text
+                        style={{
+                          fontSize: 50,
+                          marginLeft: 7,
+                          marginBottom: '50%',
+                        }}>
+                        <Icon
+                          color={theme.colors.neutraTheme.darkBlack}
+                          name={'checkmark2'}
+                          size={40}
+                        />
+                      </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => {
+                        update(item.numorca, 'RP');
+                        setHiddenItems([...hiddenItems, item.numorca]);
+                      }
+
+                      }>
+                      <Text
+                        style={{
+                          fontSize: 50,
+                          marginLeft: 7,
+                        }}>
+                        <Icon
+                          color={theme.colors.neutraTheme.darkBlack}
+                          name={'cruzar'}
+                          size={40}
+                        />
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                </ViewPrincipalCondicao>
+
+              </View>
+            );
+          }
+          return null; // Retorna null quando o item não deve ser renderizado
+        }}
         refreshControl={
           <RefreshControl refreshing={refreshing1} onRefresh={onRefresh} />
         }
